@@ -1,5 +1,5 @@
 import User from '../../../entities/User';
-import FileManager from '../../../shared/infra/FileManager';
+import IUserRepository from '../../../repositories/IUserRepository';
 import { Either, left, right } from '../../../shared/logic/Either';
 import UseCase from '../../../shared/logic/UseCase';
 import CreateUserErrors from './createUserErrors';
@@ -7,16 +7,16 @@ import CreateUserErrors from './createUserErrors';
 type Response = Either<CreateUserErrors.AlreadyCreated, User>;
 
 export default class CreateUserUseCase implements UseCase<User, Response> {
-    public constructor(private fileManager: FileManager) {}
+    public constructor(private userRepo: IUserRepository) {}
 
     public async execute(user: User): Promise<Response> {
-        const userExists = await this.fileManager.get(`users/${user.id}.json`);
+        const userExists = await this.userRepo.get(user.id);
 
         if (userExists) {
             return left(new CreateUserErrors.AlreadyCreated());
         }
 
-        await this.fileManager.create(`users/${user.id}.json`, JSON.stringify(user));
+        await this.userRepo.create(user);
 
         return right(user);
     }

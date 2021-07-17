@@ -1,37 +1,34 @@
-import User from '../../../entities/User';
-import FileManager from '../../../shared/infra/FileManager';
+import IUserRepository from '../../../repositories/IUserRepository';
 import { Either, left, right } from '../../../shared/logic/Either';
 import UseCase from '../../../shared/logic/UseCase';
 
 interface Request {
-    guildId: string;
+    guildName: string;
     userId: string;
 }
 
 type Response = Either<string, 'OK'>;
 
 class AddGuildToUserUseCase implements UseCase<Request, Response> {
-    public constructor(private fileManager: FileManager) {}
+    public constructor(private userRepo: IUserRepository) {}
 
-    public async execute({ guildId, userId }: Request): Promise<Response> {
-        const rawUser = await this.fileManager.get(`users/${userId}.json`);
+    public async execute({ guildName, userId }: Request): Promise<Response> {
+        const user = await this.userRepo.get(`users/${userId}.json`);
 
-        if (!rawUser) {
+        if (!user) {
             return left('usuário não encontrado');
         }
 
-        const user: User = JSON.parse(rawUser.toString());
-
-        const guildAlreadyAdded = user.guilds.find(guild => guild === guildId);
+        const guildAlreadyAdded = user.guilds.find(guild => guild === guildName);
 
         if (guildAlreadyAdded) {
             return left('usuário já faz parte da guilda');
         }
 
-        user.guilds.push(guildId);
-        user.currentGuild = guildId;
+        user.guilds.push(guildName);
+        user.currentGuild = guildName;
 
-        await this.fileManager.update(`users/${userId}.json`, JSON.stringify(user));
+        await this.userRepo.update(user);
 
         return right('OK');
     }
