@@ -48,7 +48,12 @@ export default class CreateGuildHandler extends BaseHandler implements Handler {
         const userCreated = await this.createUser.execute(user);
 
         if (userCreated.isLeft() && userCreated.value instanceof CreateUserErrors.AlreadyCreated) {
-            await this.addGuildToUser.execute({ guildName: guild.name, userId: user.id });
+            const addGuild = await this.addGuildToUser.execute({ guildName: guild.name, userId: user.id });
+
+            if (addGuild.isLeft()) {
+                message.reply(`Houve um problema ao atribuir o seu usuário a guilda: ${addGuild.value}`);
+                return;
+            }
         }
 
         message.reply(`Guilda criada com sucesso! :grin:`);

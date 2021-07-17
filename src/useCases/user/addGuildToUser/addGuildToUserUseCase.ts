@@ -13,7 +13,7 @@ class AddGuildToUserUseCase implements UseCase<Request, Response> {
     public constructor(private userRepo: IUserRepository) {}
 
     public async execute({ guildName, userId }: Request): Promise<Response> {
-        const user = await this.userRepo.get(`users/${userId}.json`);
+        const user = await this.userRepo.get(userId);
 
         if (!user) {
             return left('usuário não encontrado');
