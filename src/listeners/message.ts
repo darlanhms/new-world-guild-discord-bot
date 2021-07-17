@@ -1,9 +1,8 @@
 import { Message } from 'discord.js';
 import client from '../client';
 import allHandlers from '../handlers';
+import BOT_PREFIX from '../shared/consts/botPrefix';
 import Handler from '../shared/logic/Handler';
-
-const botPrefix = '>guild';
 
 function handleUpcomingMessage(
     allComands: string[],
@@ -68,11 +67,11 @@ client.on('message', message => {
         return;
     }
 
-    if (!message.content.startsWith(botPrefix)) {
+    if (!message.content.startsWith(BOT_PREFIX)) {
         return;
     }
 
-    const commandBody = message.content.slice(botPrefix.length);
+    const commandBody = message.content.slice(BOT_PREFIX.length);
     const args = commandBody.split(' ');
 
     // remove empty string at array's first position
