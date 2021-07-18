@@ -52,7 +52,7 @@ export default class AddGuildModHandler extends BaseHandler implements Handler {
         });
 
         if (!addedMods.length) {
-            return message.reply('Os membros definidos ou não fazem parte da guilda ou já são moderadores');
+            return message.reply('os membros definidos ou não fazem parte da guilda ou já são moderadores');
         }
 
         await this.guildRepo.update(guild);
