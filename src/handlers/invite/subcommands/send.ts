@@ -5,6 +5,10 @@ import MembersRole from '../../../shared/consts/membersRole';
 import BaseHandler from '../../../shared/logic/BaseHandler';
 import Handler from '../../../shared/logic/Handler';
 
+// const reactionFilter = (reaction: MessageReaction, user: User): boolean => {
+//     return ['✅'].includes(reaction.emoji.name);
+// };
+
 export default class SendInviteHandler extends BaseHandler implements Handler {
     name = 'send';
 
@@ -42,7 +46,7 @@ export default class SendInviteHandler extends BaseHandler implements Handler {
             return;
         }
 
-        message.mentions.users.forEach(user => {
+        message.mentions.users.forEach(async user => {
             if (
                 guild.members.find(member => member.id === user.id) ||
                 guild.invites?.find(invite => invite === user.id)
@@ -54,6 +58,14 @@ export default class SendInviteHandler extends BaseHandler implements Handler {
                 } else {
                     guild.invites.push(user.id);
                 }
+
+                // const userSendedMessage = await user.send(
+                //     `Você foi convidado para a guilda ${guild.name}! \nPara aceitar envie: \n>guild invite accept ${guild.name} \nPara negar envie: guild invite deny ${guild.name}`,
+                // );
+
+                // userSendedMessage.awaitReactions(reactionFilter).then(collected => {
+                //     console.log(collected.first()?.message.author.id);
+                // });
 
                 usernamesInvited.push(`<@${user.id}>`);
             }
