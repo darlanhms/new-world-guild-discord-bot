@@ -36,12 +36,7 @@ export default class AcceptInviteHandler extends BaseHandler implements Handler 
             return message.reply('você já faz parte dessa guilda cara.');
         }
 
-        console.log(guild.invites, message.author.id);
-
         guild.invites = guild.invites?.filter(invite => invite !== message.author.id);
-
-        console.log(guild.invites);
-
         guild.members.push(new GuildMember(message.author.id, MembersRole.MEMBER));
 
         await this.guildRepo.update(guild);
