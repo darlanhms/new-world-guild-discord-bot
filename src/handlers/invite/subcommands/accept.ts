@@ -53,7 +53,7 @@ export default class AcceptInviteHandler extends BaseHandler implements Handler 
         await this.guildRepo.update(guild);
 
         return message.channel.send(
-            `O gurreiro <@${message.author.id}> entrou com sucesso na guilda ${guildName}, dêem as boas vindas!`,
+            `O guerreiro <@${message.author.id}> entrou com sucesso na guilda ${guildName}, dêem as boas vindas!`,
         );
     }
 }
