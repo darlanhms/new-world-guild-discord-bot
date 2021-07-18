@@ -15,7 +15,7 @@ export default class AcceptInviteHandler extends BaseHandler implements Handler 
     }
 
     public async handle(message: Message): Promise<Message> {
-        const user = await this.userRepo.get(message.author.id);
+        let user = await this.userRepo.get(message.author.id);
         const guildName = this.getCommandPayload(message, 'invite');
 
         const guild = await this.guildRepo.get(guildName);
@@ -31,7 +31,7 @@ export default class AcceptInviteHandler extends BaseHandler implements Handler 
         }
 
         if (!user) {
-            await this.userRepo.create(
+            user = await this.userRepo.create(
                 new User({
                     id: message.author.id,
                     guilds: [guildName],
@@ -40,6 +40,9 @@ export default class AcceptInviteHandler extends BaseHandler implements Handler 
             );
         } else if (user.guilds.includes(guildName)) {
             return message.reply('você já faz parte dessa guilda cara.');
+        } else {
+            user.guilds.push(guildName);
+            user.currentGuild = guildName;
         }
 
         guild.invites = guild.invites?.filter(invite => invite !== message.author.id);
@@ -50,6 +53,7 @@ export default class AcceptInviteHandler extends BaseHandler implements Handler 
             }),
         );
 
+        await this.userRepo.update(user);
         await this.guildRepo.update(guild);
 
         return message.channel.send(
