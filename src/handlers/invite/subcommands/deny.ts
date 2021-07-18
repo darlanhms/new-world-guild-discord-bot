@@ -1,14 +1,11 @@
 import { Message } from 'discord.js';
-import GuildMember from '../../../entities/GuildMember';
-import User from '../../../entities/User';
 import IGuildRepository from '../../../repositories/IGuildRepository';
 import IUserRepository from '../../../repositories/IUserRepository';
-import MembersRole from '../../../shared/consts/membersRole';
 import BaseHandler from '../../../shared/logic/BaseHandler';
 import Handler from '../../../shared/logic/Handler';
 
-export default class AcceptInviteHandler extends BaseHandler implements Handler {
-    name = 'accept';
+export default class DenyInviteHandler extends BaseHandler implements Handler {
+    name = 'deny';
 
     constructor(private userRepo: IUserRepository, private guildRepo: IGuildRepository) {
         super();
@@ -30,30 +27,16 @@ export default class AcceptInviteHandler extends BaseHandler implements Handler 
             return message.reply('você ta tendo alucinações, essa guilda não te convidou...');
         }
 
-        if (!user) {
-            await this.userRepo.create(
-                new User({
-                    id: message.author.id,
-                    guilds: [guildName],
-                    currentGuild: guildName,
-                }),
-            );
-        } else if (user.guilds.includes(guildName)) {
+        if (user?.guilds.includes(guildName)) {
             return message.reply('você já faz parte dessa guilda cara.');
         }
 
         guild.invites = guild.invites?.filter(invite => invite !== message.author.id);
-        guild.members.push(
-            new GuildMember({
-                id: message.author.id,
-                role: MembersRole.MEMBER,
-            }),
-        );
 
         await this.guildRepo.update(guild);
 
         return message.channel.send(
-            `O gurreiro <@${message.author.id}> entrou com sucesso na guilda ${guildName}, dêem as boas vindas!`,
+            `O guerreiro <@${message.author.id}> recusou o convite da guilda ${guildName}`,
         );
     }
 }

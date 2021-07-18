@@ -30,13 +30,15 @@ export const weapons = [
 ];
 
 export default class Build {
-    public constructor(
-        public name: string,
+    public name: string;
 
-        public spec: BuildSpec,
+    public spec: BuildSpec;
 
-        public firstWeapon: Weapon,
+    public firstWeapon: Weapon;
 
-        public secondWeapon: Weapon,
-    ) {}
+    public secondWeapon: Weapon;
+
+    public constructor(build: Build) {
+        Object.assign(this, build);
+    }
 }

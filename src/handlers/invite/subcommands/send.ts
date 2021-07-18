@@ -23,6 +23,11 @@ export default class SendInviteHandler extends BaseHandler implements Handler {
             return;
         }
 
+        if (!userMessage.currentGuild) {
+            message.reply('você não está com uma guilda ativa atualmente');
+            return;
+        }
+
         const guild = await this.guildRepo.get(userMessage.currentGuild);
 
         if (!guild) {

@@ -36,14 +36,27 @@ export default class CreateGuildHandler extends BaseHandler implements Handler {
         message.reply(`Criando a guilda ${guildName}... o dono será ${message.author.username}`);
 
         // guild object
-        const guildMembers = [new GuildMember(message.author.id, MembersRole.OWNER)];
-        const guild = new Guild(guildName, guildMembers);
+        const guildMembers = [
+            new GuildMember({
+                id: message.author.id,
+                role: MembersRole.OWNER,
+            }),
+        ];
+
+        const guild = new Guild({
+            name: guildName,
+            members: guildMembers,
+        });
 
         // save guild object
         await this.guildRepo.create(guild);
 
         // adding guild to user
-        const user = new User(message.author.id, guild.name, [guild.name]);
+        const user = new User({
+            id: message.author.id,
+            currentGuild: guild.name,
+            guilds: [guild.name],
+        });
 
         const userCreated = await this.createUser.execute(user);
 

@@ -1,5 +1,11 @@
 import MembersRole from '../shared/consts/membersRole';
 
 export default class GuildMember {
-    public constructor(public id: string, public role: MembersRole) {}
+    public id: string;
+
+    public role: MembersRole;
+
+    public constructor(guildMember: GuildMember) {
+        Object.assign(this, guildMember);
+    }
 }
