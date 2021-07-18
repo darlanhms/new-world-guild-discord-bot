@@ -1,5 +1,6 @@
 import { Message } from 'discord.js';
 import IUserRepository from '../../repositories/IUserRepository';
+import { REMEMBER_CASE, USER_NOT_CREATED_YET } from '../../shared/consts/defaultMessages';
 import BaseHandler from '../../shared/logic/BaseHandler';
 import Handler from '../../shared/logic/Handler';
 
@@ -15,15 +16,11 @@ export default class SetGuildHandler extends BaseHandler implements Handler {
         const guildName = this.getCommandPayload(message);
 
         if (!guildName) {
-            message.reply(
-                'você precisa informar o nome da guilda \nLembre-se, maiúsculas e minúsculas importam :wink:',
-            );
+            return message.reply(`você precisa informar o nome da guilda ${REMEMBER_CASE}`);
         }
 
         if (!user) {
-            return message.reply(
-                'você ainda não faz parte do nosso ecossistema, para fazer isso você precisa participar de alguma guilda ou criar uma build',
-            );
+            return message.reply(USER_NOT_CREATED_YET);
         }
 
         if (!user.guilds.length) {
@@ -32,7 +29,7 @@ export default class SetGuildHandler extends BaseHandler implements Handler {
 
         if (!user.guilds.find(guild => guild === guildName)) {
             return message.reply(
-                '\nVocê digitou o nome de uma guilda na qual você não faz parte \nLembre-se, maiúsculas e minúsculas importam :wink:',
+                `\nVocê digitou o nome de uma guilda na qual você não faz parte ${REMEMBER_CASE}`,
             );
         }
 
