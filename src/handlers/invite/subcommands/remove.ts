@@ -43,7 +43,7 @@ export default class RemoveInviteHandler extends BaseHandler implements Handler 
 
         const strInvites = idsToRevoke.map(id => `<@${id}>`).join(' ');
 
-        if (strInvites.length === 1) {
+        if (idsToRevoke.length === 1) {
             return message.channel.send(
                 `O convite do exonerado ${strInvites} foi removido, só não vão brigar ein`,
             );
