@@ -1,6 +1,7 @@
 import { Message } from 'discord.js';
 import IGuildRepository from '../../../repositories/IGuildRepository';
 import IUserRepository from '../../../repositories/IUserRepository';
+import BOT_PREFIX from '../../../shared/consts/botPrefix';
 import MembersRole from '../../../shared/consts/membersRole';
 import BaseHandler from '../../../shared/logic/BaseHandler';
 import Handler from '../../../shared/logic/Handler';
@@ -93,7 +94,7 @@ export default class SendInviteHandler extends BaseHandler implements Handler {
         guildName: string,
     ): Promise<Message> {
         const toAwaitInviteMessage = await message.channel.send(
-            `O guerreiro <@${userToInviteId}> foi convidado para a guilda ${guildName}! \nBasta reagir para aceitar ou recusar`,
+            `<@${userToInviteId}>, você foi convidado para a guilda \`${guildName}\`! \n Basta usar o comando \`${BOT_PREFIX} invite (accept|deny) <nome da guilda>\` ou \n Você pode reagir para aceitar ou recusar`,
         );
 
         toAwaitInviteMessage.react('✅');
