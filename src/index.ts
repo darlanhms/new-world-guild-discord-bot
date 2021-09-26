@@ -1,3 +1,3 @@
 import './client';
 
-import './listeners/message';
+import './listeners';

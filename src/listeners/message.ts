@@ -62,7 +62,7 @@ function handleUpcomingMessage(
     );
 }
 
-client.on('message', message => {
+client.on('messageCreate', message => {
     if (message.author.bot) {
         return;
     }
