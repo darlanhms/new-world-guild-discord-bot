@@ -4,20 +4,23 @@ import IUserRepository from '../../../repositories/IUserRepository';
 import MembersRole from '../../../shared/consts/membersRole';
 import BaseHandler from '../../../shared/logic/BaseHandler';
 import Handler from '../../../shared/logic/Handler';
-
-// const reactionFilter = (reaction: MessageReaction, user: User): boolean => {
-//     return ['✅'].includes(reaction.emoji.name);
-// };
+import AcceptGuildInviteUseCase from '../../../useCases/invites/acceptGuildInvite/acceptGuildInviteUseCase';
+import DenyGuildInviteUseCase from '../../../useCases/invites/denyGuildInvite/denyGuildInviteUseCase';
 
 export default class SendInviteHandler extends BaseHandler implements Handler {
     name = 'send';
 
-    constructor(private guildRepo: IGuildRepository, private userRepo: IUserRepository) {
+    constructor(
+        private guildRepo: IGuildRepository,
+        private userRepo: IUserRepository,
+        private acceptGuildInvite: AcceptGuildInviteUseCase,
+        private denyGuildInvite: DenyGuildInviteUseCase,
+    ) {
         super();
     }
 
     async handle(message: Message): Promise<void> {
-        const usernamesInvited: string[] = [];
+        const userIdsToInvite: string[] = [];
         const alreadyAddedMembers: string[] = [];
 
         const userMessage = await this.userRepo.get(message.author.id);
@@ -51,7 +54,7 @@ export default class SendInviteHandler extends BaseHandler implements Handler {
                 guild.members.find(member => member.id === user.id) ||
                 guild.invites?.find(invite => invite === user.id)
             ) {
-                alreadyAddedMembers.push(`<@${user.id}>`);
+                alreadyAddedMembers.push(user.id);
             } else {
                 if (!guild.invites) {
                     guild.invites = [user.id];
@@ -59,46 +62,73 @@ export default class SendInviteHandler extends BaseHandler implements Handler {
                     guild.invites.push(user.id);
                 }
 
-                // const userSendedMessage = await user.send(
-                //     `Você foi convidado para a guilda ${guild.name}! \nPara aceitar envie: \n>guild invite accept ${guild.name} \nPara negar envie: guild invite deny ${guild.name}`,
-                // );
-
-                // userSendedMessage.awaitReactions(reactionFilter).then(collected => {
-                //     console.log(collected.first()?.message.author.id);
-                // });
-
-                usernamesInvited.push(`<@${user.id}>`);
+                userIdsToInvite.push(user.id);
             }
         });
 
         await this.guildRepo.update(guild);
 
+        const alreadyInvitedTags = alreadyAddedMembers.map(member => `<@${member}>`).join(', ');
+
         if (alreadyAddedMembers.length) {
             if (alreadyAddedMembers.length === 1) {
-                message.channel.send(
-                    `Fica ligado ai, o guerreiro ${alreadyAddedMembers.join(
-                        ' ',
-                    )} ja faz parte da guilda ou já foi convidado`,
+                message.reply(
+                    `Fica ligado ai, o guerreiro ${alreadyInvitedTags} ja faz parte da guilda ou já foi convidado`,
                 );
             } else {
-                message.channel.send(
-                    `Fica ligado ai, os guerreiros ${alreadyAddedMembers.join(
-                        ' ',
-                    )} ja fazem parte da guilda ou já foram convidados`,
+                message.reply(
+                    `Fica ligado ai, os guerreiros ${alreadyInvitedTags} ja fazem parte da guilda ou já foram convidados`,
                 );
             }
         }
 
-        if (usernamesInvited.length) {
-            if (usernamesInvited.length === 1) {
-                message.channel.send(
-                    `O guerreiro ${usernamesInvited.join(' ')} foi convidado para a guilda ${guild.name}!`,
-                );
-            } else {
-                message.channel.send(
-                    `Os guerreiros ${usernamesInvited.join(' ')} foram convidados para a guilda ${guild.name}!`,
-                );
-            }
+        for (const userId of userIdsToInvite) {
+            this.handleSendInviteToUser(userId, message, guild.name);
         }
+    }
+
+    private async handleSendInviteToUser(
+        userToInviteId: string,
+        message: Message,
+        guildName: string,
+    ): Promise<Message> {
+        const toAwaitInviteMessage = await message.channel.send(
+            `O guerreiro <@${userToInviteId}> foi convidado para a guilda ${guildName}! \nBasta reagir para aceitar ou recusar`,
+        );
+
+        toAwaitInviteMessage.react('✅');
+        toAwaitInviteMessage.react('❌');
+
+        const reactionResponseMap = await toAwaitInviteMessage.awaitReactions({
+            filter: (reaction, user) =>
+                user.id === userToInviteId && ['✅', '❌'].includes(reaction.emoji.name || ''),
+            max: 1,
+        });
+
+        const reactionResponse = reactionResponseMap.first();
+
+        const reactionEmoji = reactionResponse?.emoji.name;
+
+        if (reactionEmoji === '✅') {
+            const acceptResponse = await this.acceptGuildInvite.execute({ guildName, userId: userToInviteId });
+
+            if (acceptResponse.isLeft()) {
+                return toAwaitInviteMessage.reply(acceptResponse.value);
+            }
+
+            return toAwaitInviteMessage.reply(`Convite aceito!, seja bem-vindo a guilda ${guildName}!`);
+        }
+
+        if (reactionEmoji === '❌') {
+            const denyResponse = await this.denyGuildInvite.execute({ guildName, userId: userToInviteId });
+
+            if (denyResponse.isLeft()) {
+                return toAwaitInviteMessage.reply(denyResponse.value);
+            }
+
+            return toAwaitInviteMessage.reply(`Convite recusado, uma pena :smiling_face_with_tear:`);
+        }
+
+        return toAwaitInviteMessage;
     }
 }
