@@ -20,6 +20,10 @@ export default class GuildInfosHandler extends BaseHandler implements Handler {
             );
         }
 
+        if (!user.currentGuild) {
+            return message.reply(`você não tem uma guilda ativa no momento`);
+        }
+
         const guild = await this.guildRepo.get(user.currentGuild);
 
         if (!guild) {
