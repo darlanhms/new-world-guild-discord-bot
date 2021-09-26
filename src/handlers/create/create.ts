@@ -33,7 +33,7 @@ export default class CreateGuildHandler extends BaseHandler implements Handler {
             return;
         }
 
-        message.reply(`Criando a guilda ${guildName}... o dono será ${message.author.username}`);
+        message.reply(`Criando a guilda ${guildName}... o dono será <@${message.author.id}>`);
 
         // guild object
         const guildMembers = [
