@@ -94,7 +94,7 @@ export default class SendInviteHandler extends BaseHandler implements Handler {
         guildName: string,
     ): Promise<Message> {
         const toAwaitInviteMessage = await message.channel.send(
-            `<@${userToInviteId}>, você foi convidado para a guilda \`${guildName}\`! \n Basta usar o comando \`${BOT_PREFIX} invite (accept|deny) <nome da guilda>\` ou \n Você pode reagir para aceitar ou recusar`,
+            `<@${userToInviteId}>, você foi convidado para a guilda **${guildName}**! \n Basta usar o comando \`${BOT_PREFIX} invite (accept|deny) <nome da guilda>\` ou \n Você pode reagir para aceitar ou recusar`,
         );
 
         toAwaitInviteMessage.react('✅');
