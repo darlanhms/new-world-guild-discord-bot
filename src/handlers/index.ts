@@ -6,6 +6,7 @@ import inviteHandler from './invite';
 import listGuildsHandler from './list';
 import modGuildHandler from './mod';
 import pingHandler from './ping';
+import quitHandler from './quit';
 import setGuildHandler from './set';
 
 const allHandlers: Array<Handler> = [
@@ -16,6 +17,7 @@ const allHandlers: Array<Handler> = [
     setGuildHandler,
     listGuildsHandler,
     modGuildHandler,
+    quitHandler,
 ];
 
 export default allHandlers;
