@@ -21,8 +21,6 @@ export default class QuitHandler implements Handler {
             return;
         }
 
-        // `Você tem certeza que deseja sair da guilda ${user.currentGuild}?\nReaja com :white_check_mark: para SIM ou :x: para NÃO`,
-
         const sendedMessage = await message.reply(
             `Você tem certeza que deseja sair da guilda ${user.currentGuild}?\n:white_check_mark: para SIM ou :x: para NÃO`,
         );
