@@ -9,6 +9,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import { BuildSpec, Weapon } from '../../../entities/Build';
 import Handler from '../../../shared/logic/Handler';
+import CreateBuildUseCase from '../../../useCases/build/createBuild/createBuildUseCase';
 
 type AwaitOptions = AwaitMessageComponentOptions<MessageComponentInteraction>;
 
@@ -61,6 +62,8 @@ const possibleSpecs: Array<MessageSelectOptionData> = [
 
 export default class CreateBuildHandler implements Handler {
     name = 'create';
+
+    constructor(private createBuild: CreateBuildUseCase) {}
 
     public async handle(message: Message): Promise<void> {
         const baseMessage = 'Siga os passos abaixo para montar a sua build :point_down_tone1:\n\n';
@@ -117,8 +120,26 @@ export default class CreateBuildHandler implements Handler {
                 content: `${finalMessages}\n\n:x: Que pena, a build que você acabou de criar foi pro espaço :face_exhaling:`,
             });
         } else if (confirmEmoji === '✅') {
+            const response = await this.createBuild.execute({
+                userId: message.author.id,
+                firstWeapon: selectedFirstWeapon.value as Weapon,
+                secondWeapon: selectedSecondWeapon.value as Weapon,
+                spec: selectedSpec.value as BuildSpec,
+            });
+
+            if (response.isLeft()) {
+                replyMessage.edit({
+                    content: `${finalMessages}\n\nErro ao criar a build: ${response.value}`,
+                });
+                return;
+            }
+
+            let finalMessage = `${finalMessages}\n\n:white_check_mark: Build criada com sucesso! Lembre-se, essa build não é atrelada a guilda atual, você pode usá-la onde quiser :star_struck:`;
+
+            finalMessage += `\nA build foi criada com um nome temporário ***${response.value.name}***, porém você pode alterá-lo com o comando \`>guild build editName <old name> <new name>\``;
+
             replyMessage.edit({
-                content: `${finalMessages}\n\n:white_check_mark: Build criada com sucesso! Lembre-se, essa build não é atrelada a guilda atual, você pode usá-la onde quiser :star_struck:`,
+                content: finalMessage,
             });
         }
     }
