@@ -106,7 +106,7 @@ export default class CreateBuildHandler implements Handler {
 
             let finalMessage = `${finalMessages}\n\n:white_check_mark: Build criada com sucesso! Lembre-se, essa build não é atrelada a guilda atual, você pode usá-la onde quiser :star_struck:`;
 
-            finalMessage += `\nA build foi criada com um nome temporário ***${response.value.name}***, porém você pode alterá-lo com o comando \`${BOT_PREFIX} build editName <old name> <new name>\``;
+            finalMessage += `\nA build foi criada com um nome temporário ***${response.value.name}***, porém você pode alterá-lo com o comando \`${BOT_PREFIX} build editName oldName, newName\``;
 
             replyMessage.edit({
                 content: finalMessage,
