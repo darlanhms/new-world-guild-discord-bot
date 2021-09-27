@@ -7,7 +7,8 @@ import {
     MessageSelectOptionData,
 } from 'discord.js';
 import { v4 as uuid } from 'uuid';
-import { BuildSpec, Weapon } from '../../../entities/Build';
+import BOT_PREFIX from '../../../shared/consts/botPrefix';
+import { BuildSpec, specsWithLabel, Weapon, weaponsWithLabel } from '../../../shared/consts/build';
 import Handler from '../../../shared/logic/Handler';
 import CreateBuildUseCase from '../../../useCases/build/createBuild/createBuildUseCase';
 
@@ -28,37 +29,6 @@ interface StepsOptions {
 interface WeaponStepOptions {
     firstWeapon?: MessageSelectOptionData;
 }
-
-const possibleWeapons: Array<MessageSelectOptionData> = [
-    { value: Weapon.BOW, label: 'Bow' },
-    { value: Weapon.WAR_HAMMER, label: 'War Hammer' },
-    { value: Weapon.MUSKET, label: 'Musket' },
-    { value: Weapon.SPEAR, label: 'Spear' },
-    { value: Weapon.SWORD, label: 'Sword' },
-    { value: Weapon.HATCHET, label: 'Hatchet' },
-    { value: Weapon.RAPIER, label: 'Rapier' },
-    { value: Weapon.LIFE_STAFF, label: 'Life Staff' },
-    { value: Weapon.FIRE_STAFF, label: 'Fire Staff' },
-    { value: Weapon.ICE_GAUNTLET, label: 'Ice Gauntlet' },
-];
-
-const possibleSpecs: Array<MessageSelectOptionData> = [
-    {
-        label: 'Damage',
-        value: BuildSpec.DAMAGE,
-        emoji: '⚔️',
-    },
-    {
-        label: 'Tank',
-        value: BuildSpec.TANK,
-        emoji: '🛡️',
-    },
-    {
-        label: 'Healer',
-        value: BuildSpec.HEALER,
-        emoji: '🏥',
-    },
-];
 
 export default class CreateBuildHandler implements Handler {
     name = 'create';
@@ -136,7 +106,7 @@ export default class CreateBuildHandler implements Handler {
 
             let finalMessage = `${finalMessages}\n\n:white_check_mark: Build criada com sucesso! Lembre-se, essa build não é atrelada a guilda atual, você pode usá-la onde quiser :star_struck:`;
 
-            finalMessage += `\nA build foi criada com um nome temporário ***${response.value.name}***, porém você pode alterá-lo com o comando \`>guild build editName <old name> <new name>\``;
+            finalMessage += `\nA build foi criada com um nome temporário ***${response.value.name}***, porém você pode alterá-lo com o comando \`${BOT_PREFIX} build editName <old name> <new name>\``;
 
             replyMessage.edit({
                 content: finalMessage,
@@ -153,7 +123,7 @@ export default class CreateBuildHandler implements Handler {
         const specSelect = this.createSelect({
             id: specSelectId,
             placeholder: 'Escolha o tipo de build',
-            options: possibleSpecs,
+            options: specsWithLabel,
         });
 
         const replyMessage = await message.reply({
@@ -165,7 +135,7 @@ export default class CreateBuildHandler implements Handler {
             this.createSelectAwaitOptions(specSelectId, message.author.id),
         );
 
-        const selectedSpec = possibleSpecs.find(s => s.value === specInteraction.values[0]);
+        const selectedSpec = specsWithLabel.find(s => s.value === specInteraction.values[0]);
 
         return [replyMessage, selectedSpec as MessageSelectOptionData];
     }
@@ -179,8 +149,8 @@ export default class CreateBuildHandler implements Handler {
         const selectedId = uuid();
 
         const weaponsToSelect = firstWeapon
-            ? possibleWeapons.filter(w => w.value !== firstWeapon.value)
-            : possibleWeapons;
+            ? weaponsWithLabel.filter(w => w.value !== firstWeapon.value)
+            : weaponsWithLabel;
 
         const weaponSelect = this.createSelect({
             id: selectedId,
@@ -197,7 +167,7 @@ export default class CreateBuildHandler implements Handler {
             this.createSelectAwaitOptions(selectedId, message.author.id),
         );
 
-        const selectedWeapon = possibleWeapons.find(w => w.value === weaponInteraction.values[0]);
+        const selectedWeapon = weaponsWithLabel.find(w => w.value === weaponInteraction.values[0]);
 
         return selectedWeapon as MessageSelectOptionData;
     }
