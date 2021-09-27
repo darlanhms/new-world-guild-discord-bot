@@ -4,17 +4,18 @@ export enum BuildSpec {
     TANK = 'TANK',
 }
 
-export type Weapon =
-    | 'Bow'
-    | 'War Hammer'
-    | 'Musket'
-    | 'Spear'
-    | 'Sword'
-    | 'Hatchet'
-    | 'Rapier'
-    | 'Life Stave'
-    | 'Fire Stave'
-    | 'Ice Gauntlet';
+export enum Weapon {
+    BOW = 'Bow',
+    WAR_HAMMER = 'War Hammer',
+    MUSKET = 'Musket',
+    SPEAR = 'Spear',
+    SWORD = 'Sword',
+    HATCHET = 'Hatchet',
+    RAPIER = 'Rapier',
+    LIFE_STAFF = 'Life Staff',
+    FIRE_STAFF = 'Fire Staff',
+    ICE_GAUNTLET = 'Ice Gauntlet',
+}
 
 export const weapons = [
     'Bow',

@@ -1,4 +1,5 @@
 import Handler from '../shared/logic/Handler';
+import buildHandler from './build';
 
 import createGuildHandler from './create';
 import guildInfosHandler from './infos';
@@ -18,6 +19,7 @@ const allHandlers: Array<Handler> = [
     listGuildsHandler,
     modGuildHandler,
     quitHandler,
+    buildHandler,
 ];
 
 export default allHandlers;
