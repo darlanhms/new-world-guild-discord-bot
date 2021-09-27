@@ -77,5 +77,9 @@ client.on('messageCreate', message => {
     // remove empty string at array's first position
     args.shift();
 
-    handleUpcomingMessage(args, 0, message, allHandlers);
+    try {
+        handleUpcomingMessage(args, 0, message, allHandlers);
+    } catch (error: any) {
+        console.error(`[HANDLE MESSAGE ERROR]: ${error.message}`);
+    }
 });

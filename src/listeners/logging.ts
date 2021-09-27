@@ -7,3 +7,7 @@ client.on('ready', () => {
 client.on('error', e => {
     console.log(`error on connection: ${e.toString()}`);
 });
+
+process.on('unhandledRejection', error => {
+    console.log(`Unhandled error: ${(error as any)?.message}`);
+});

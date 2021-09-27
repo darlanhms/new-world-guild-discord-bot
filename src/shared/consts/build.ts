@@ -7,6 +7,7 @@ export enum BuildSpec {
 export enum Weapon {
     BOW = 'Bow',
     WAR_HAMMER = 'War Hammer',
+    GREAT_AXE = 'Great Axe',
     MUSKET = 'Musket',
     SPEAR = 'Spear',
     SWORD = 'Sword',
@@ -18,32 +19,33 @@ export enum Weapon {
 }
 
 export const weaponsWithLabel = [
-    { value: Weapon.BOW, label: 'Bow' },
-    { value: Weapon.WAR_HAMMER, label: 'War Hammer' },
-    { value: Weapon.MUSKET, label: 'Musket' },
-    { value: Weapon.SPEAR, label: 'Spear' },
-    { value: Weapon.SWORD, label: 'Sword' },
-    { value: Weapon.HATCHET, label: 'Hatchet' },
-    { value: Weapon.RAPIER, label: 'Rapier' },
-    { value: Weapon.LIFE_STAFF, label: 'Life Staff' },
-    { value: Weapon.FIRE_STAFF, label: 'Fire Staff' },
-    { value: Weapon.ICE_GAUNTLET, label: 'Ice Gauntlet' },
+    { value: Weapon.BOW, label: 'Arco' },
+    { value: Weapon.WAR_HAMMER, label: 'Martelão' },
+    { value: Weapon.GREAT_AXE, label: 'Machadão' },
+    { value: Weapon.MUSKET, label: 'Mosquete' },
+    { value: Weapon.SPEAR, label: 'Lança' },
+    { value: Weapon.SWORD, label: 'Espada & Escudo' },
+    { value: Weapon.HATCHET, label: 'Machadinha' },
+    { value: Weapon.RAPIER, label: 'Rapieira' },
+    { value: Weapon.LIFE_STAFF, label: 'Cajado de vida' },
+    { value: Weapon.FIRE_STAFF, label: 'Cajado de fogo' },
+    { value: Weapon.ICE_GAUNTLET, label: 'Manopla de gelo' },
 ];
 
 export const specsWithLabel = [
     {
-        label: 'Damage',
+        label: 'Dano',
         value: BuildSpec.DAMAGE,
         emoji: '⚔️',
     },
     {
-        label: 'Tank',
+        label: 'Tanque',
         value: BuildSpec.TANK,
         emoji: '🛡️',
     },
     {
-        label: 'Healer',
+        label: 'Cura',
         value: BuildSpec.HEALER,
-        emoji: '🏥',
+        emoji: '🚑',
     },
 ];
