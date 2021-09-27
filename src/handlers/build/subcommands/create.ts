@@ -9,6 +9,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import BOT_PREFIX from '../../../shared/consts/botPrefix';
 import { BuildSpec, specsWithLabel, Weapon, weaponsWithLabel } from '../../../shared/consts/build';
+import BaseHandler from '../../../shared/logic/BaseHandler';
 import Handler from '../../../shared/logic/Handler';
 import CreateBuildUseCase from '../../../useCases/build/createBuild/createBuildUseCase';
 
@@ -30,12 +31,15 @@ interface WeaponStepOptions {
     firstWeapon?: MessageSelectOptionData;
 }
 
-export default class CreateBuildHandler implements Handler {
+export default class CreateBuildHandler extends BaseHandler implements Handler {
     name = 'create';
 
-    constructor(private createBuild: CreateBuildUseCase) {}
+    constructor(private createBuild: CreateBuildUseCase) {
+        super();
+    }
 
     public async handle(message: Message): Promise<void> {
+        const buildName = this.getCommandPayload(message, 'build');
         const baseMessage = 'Siga os passos abaixo para montar a sua build :point_down_tone1:\n\n';
 
         const [replyMessage, selectedSpec] = await this.askForSpec({
@@ -95,6 +99,7 @@ export default class CreateBuildHandler implements Handler {
                 firstWeapon: selectedFirstWeapon.value as Weapon,
                 secondWeapon: selectedSecondWeapon.value as Weapon,
                 spec: selectedSpec.value as BuildSpec,
+                name: buildName,
             });
 
             if (response.isLeft()) {
@@ -106,7 +111,9 @@ export default class CreateBuildHandler implements Handler {
 
             let finalMessage = `${finalMessages}\n\n:white_check_mark: Build criada com sucesso! Lembre-se, essa build não é atrelada a guilda atual, você pode usá-la onde quiser :star_struck:`;
 
-            finalMessage += `\nA build foi criada com um nome temporário ***${response.value.name}***, porém você pode alterá-lo com o comando \`${BOT_PREFIX} build editName oldName, newName\``;
+            if (!buildName) {
+                finalMessage += `\n\nComo você não especificou um nome, a build foi criada com um nome temporário ***${response.value.name}***, porém você pode alterá-lo com o comando \`${BOT_PREFIX} build editName ${response.value.name}, newName\``;
+            }
 
             replyMessage.edit({
                 content: finalMessage,
